@@ -6,6 +6,7 @@ const requiredTables = ['users', 'posts', 'comments', 'categories'];
 
 const dbConnect = async () => {
   const dbPassword = process.env.DB_PASSWORD;
+  console.log(dbPassword);
   if (!dbPassword) {
     throw new Error('DB_PASSWORD environment variable is required.');
   }

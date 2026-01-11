@@ -102,7 +102,7 @@ app.get('/', (req, res) => res.status(200).send('Hello World!'));
 // ` Configure app lister with port and DB Configure with app start up
 app.listen(port, async () => {
   try {
-    console.log(`Blogpost app listening on port ${port}!`);
+    console.log(`StacoPost app listening on port ${port}!`);
     await dbConnect();
   } catch (error) {
     console.log(`Error in Blogpost app` + error);

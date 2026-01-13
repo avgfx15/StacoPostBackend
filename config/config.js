@@ -1,8 +1,8 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 
 dotenv.config({ override: true });
 
-export default {
+module.exports = {
   development: {
     dialect: 'mysql',
     host: process.env.DB_HOST,

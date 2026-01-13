@@ -55,7 +55,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // @ Port Declare
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Webhooks removed
 

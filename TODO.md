@@ -1,7 +1,7 @@
-# TODO: Fix Database Selection Error
+# Database Fix TODO
 
-- [x] Update backend/config/config.js to use DB_NAME instead of DB_DATABASE
-- [x] Update backend/DB/sequelize.js to use DB_NAME instead of DB_DATABASE
-- [x] Update backend/DB/dbConnect.js to use DB_NAME instead of DB_DATABASE
-- [ ] Restart the application to apply changes
-- [ ] Test the database connection and sync process
+- [x] Identified foreign key constraint error in posts table referencing users.id
+- [x] Modified dbConnect.js to drop and recreate tables if missing to ensure proper primary keys
+- [x] Test the database connection by running the application
+- [x] Verify that all tables are created successfully with correct foreign keys
+- [x] Identified that posts are not fetching because tables were recreated and are now empty

@@ -59,6 +59,8 @@ export const getAllPostController = async (req, res) => {
 
   // Check if user is admin to show all posts, else only active posts
   const user = req.user;
+  console.log('🚀 ~ getAllPostController ~ user:', user);
+
   const includeInactive = req.query.includeInactive === 'true';
   if (!user || user.role !== 'admin') {
     query.isActive = true;

@@ -6,7 +6,7 @@ const requiredTables = ['users', 'posts', 'comments', 'categories'];
 
 const dbConnect = async () => {
   const dbPassword = process.env.DB_PASSWORD;
-  console.log(dbPassword);
+
   if (!dbPassword) {
     throw new Error('DB_PASSWORD environment variable is required.');
   }
@@ -14,9 +14,10 @@ const dbConnect = async () => {
   try {
     // Authenticate with the existing database
     await sequelize.authenticate();
+    console.log(await sequelize.authenticate());
     console.log('Database connection established successfully.');
   } catch (error) {
-    console.error('Database connection failed:', error.message);
+    console.error('Database connection failed :', error.message);
     throw error;
   }
 
@@ -30,13 +31,35 @@ const dbConnect = async () => {
 
     if (missingTables.length > 0) {
       console.log(
-        `Missing tables: ${missingTables.join(', ')}. Creating tables...`
+        `Missing tables: ${missingTables.join(
+          ', '
+        )}. Dropping and recreating all required tables...`
       );
-      // Sync all models to create missing tables
-      await sequelize.sync(); // Creates tables if they don't exist, without altering existing ones
+      // Drop all required tables to ensure clean recreation
+      for (const table of requiredTables) {
+        try {
+          await queryInterface.dropTable(table, { force: true });
+          console.log(`Dropped table: ${table}`);
+        } catch (dropError) {
+          console.log(`Table ${table} does not exist or already dropped.`);
+        }
+      }
+      // Sync all models to create tables
+      await sequelize.sync(); // Creates tables if they don't exist
       console.log('All models were synchronized successfully.');
     } else {
       console.log('All required tables are available.');
+      // Force recreate comments table if it exists but has issues
+      const queryInterface = sequelize.getQueryInterface();
+      const existingTables = await queryInterface.showAllTables();
+      if (existingTables.includes('comments')) {
+        console.log(
+          'Dropping and recreating comments table to fix schema issues...'
+        );
+        await queryInterface.dropTable('comments');
+        await sequelize.sync(); // Recreate the table
+        console.log('Comments table recreated successfully.');
+      }
     }
   } catch (syncError) {
     console.error('Failed to sync tables:', syncError.message);

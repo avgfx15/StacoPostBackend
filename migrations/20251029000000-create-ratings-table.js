@@ -2,10 +2,91 @@
 
 export default {
   async up(queryInterface, Sequelize) {
-    // Migration is empty to avoid duplicate table/index errors
+    await queryInterface.createTable('ratings', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      ratingUser_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'users',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      ratingPost_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'posts',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      ratingComment_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'comments',
+          key: 'id',
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
+      rating: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate: {
+          min: 1,
+          max: 5,
+        },
+      },
+      createdAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+      updatedAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW,
+      },
+    });
+
+    // Add unique indexes
+    await queryInterface.addIndex(
+      'ratings',
+      ['ratingUser_id', 'ratingPost_id'],
+      {
+        unique: true,
+        name: 'unique_rating_user_post',
+        where: {
+          ratingPost_id: {
+            [Sequelize.Op.ne]: null,
+          },
+        },
+      }
+    );
+
+    await queryInterface.addIndex(
+      'ratings',
+      ['ratingUser_id', 'ratingComment_id'],
+      {
+        unique: true,
+        name: 'unique_rating_user_comment',
+        where: {
+          ratingComment_id: {
+            [Sequelize.Op.ne]: null,
+          },
+        },
+      }
+    );
   },
 
   async down(queryInterface, Sequelize) {
-    // Migration is empty to avoid duplicate table/index errors
+    await queryInterface.dropTable('ratings');
   },
 };

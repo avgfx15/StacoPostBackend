@@ -14,7 +14,7 @@ const dbConnect = async () => {
   try {
     // Authenticate with the existing database
     await sequelize.authenticate();
-    console.log(await sequelize.authenticate());
+
     console.log('Database connection established successfully.');
   } catch (error) {
     console.error('Database connection failed :', error.message);
@@ -49,6 +49,9 @@ const dbConnect = async () => {
       console.log('All models were synchronized successfully.');
     } else {
       console.log('All required tables are available.');
+      // Note: Removed force recreate of comments table to prevent data loss on restarts
+      // If schema issues persist, uncomment and modify the block below
+      /*
       // Force recreate comments table if it exists but has issues
       const queryInterface = sequelize.getQueryInterface();
       const existingTables = await queryInterface.showAllTables();
@@ -56,10 +59,20 @@ const dbConnect = async () => {
         console.log(
           'Dropping and recreating comments table to fix schema issues...'
         );
+        // Drop dependent tables first to avoid foreign key constraints
+        if (existingTables.includes('likes')) {
+          await queryInterface.dropTable('likes', { force: true });
+          console.log('Dropped table: likes');
+        }
+        if (existingTables.includes('ratings')) {
+          await queryInterface.dropTable('ratings', { force: true });
+          console.log('Dropped table: ratings');
+        }
         await queryInterface.dropTable('comments');
         await sequelize.sync(); // Recreate the table
         console.log('Comments table recreated successfully.');
       }
+      */
     }
   } catch (syncError) {
     console.error('Failed to sync tables:', syncError.message);

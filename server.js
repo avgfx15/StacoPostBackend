@@ -29,30 +29,46 @@ import { uploadAuthController } from './controllers/postControllers.js';
 const app = express();
 
 // ` CORS Middleware
+
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://stacopost-react-mysql.onrender.com',
   'https://stacodev.com',
-  process.env.CLIENT_URL,
+  'http://72.60.200.197',
+  ...(process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(',').map(o => o.trim())
+    : [])
 ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // allow server-to-server, curl, postman
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg =
-        'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+
+    console.error('❌ Blocked by CORS:', origin);
+    return callback(
+      new Error('CORS policy does not allow this origin'),
+      false
+    );
   },
   credentials: true,
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  allowedHeaders:
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+  ],
 };
+
 app.use(cors(corsOptions));
+
+
+
 
 // @ Port Declare
 const port = process.env.PORT || 5000;

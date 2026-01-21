@@ -72,15 +72,15 @@ app.get('/posts/upload-auth', uploadAuthController);
 // Clerk middleware removed
 
 // ` Configure middleware router
-app.use('/auth', authRouter);
-app.use('/users', userRouter);
-app.use('/posts', postRouter);
-app.use('/comments', commentRouter);
-app.use('/categories', categoryRouter);
-app.use('/likes', likeRouter);
-app.use('/ratings', ratingRouter);
-app.use('/contact', contactRouter);
-app.use('/whatsapp', whatsappWebhookRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
+app.use('/api/posts', postRouter);
+app.use('/api/comments', commentRouter);
+app.use('/api/categories', categoryRouter);
+app.use('/api/likes', likeRouter);
+app.use('/api/ratings', ratingRouter);
+app.use('/api/contact', contactRouter);
+app.use('/api/whatsapp', whatsappWebhookRouter);
 
 app.use((error, req, res, next) => {
   if (!res.headersSent) {

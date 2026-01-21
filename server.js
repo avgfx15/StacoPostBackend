@@ -72,7 +72,7 @@ app.get('/posts/upload-auth', uploadAuthController);
 // Clerk middleware removed
 
 // ` Configure middleware router
-app.use('/api/auth', authRouter);
+app.use('/auth', authRouter);
 app.use('/users', userRouter);
 app.use('/posts', postRouter);
 app.use('/comments', commentRouter);

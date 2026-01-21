@@ -21,3 +21,7 @@
 - Run the backend server to test the fix.
 - Check logs for successful connection without table recreation.
 - If schema issues arise in the future, the commented code can be used as a reference.
+
+
+
+

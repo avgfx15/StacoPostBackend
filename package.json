@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "build": "tsc --build"
+    "start:dev": "cross-env NODE_ENV=development nodemon server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +29,7 @@
     "twilio": "^5.10.4"
   },
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "sequelize-cli": "^6.6.3"
   }
 }

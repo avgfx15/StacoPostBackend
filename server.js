@@ -28,6 +28,16 @@ import { uploadAuthController } from './controllers/postControllers.js';
 // ` Configure App
 const app = express();
 
+// ` Configure Environment Variables
+import dotenv from 'dotenv';
+
+const envFile =
+  process.env.NODE_ENV === 'production'
+    ? '.env.production'
+    : '.env.development';
+
+dotenv.config({ path: envFile });
+
 // ` CORS Middleware
 
 const allowedOrigins = [
@@ -35,8 +45,8 @@ const allowedOrigins = [
   'https://stacodev.com',
   'http://72.60.200.197',
   ...(process.env.CLIENT_URL
-    ? process.env.CLIENT_URL.split(',').map(o => o.trim())
-    : [])
+    ? process.env.CLIENT_URL.split(',').map((o) => o.trim())
+    : []),
 ];
 
 const corsOptions = {
@@ -49,10 +59,7 @@ const corsOptions = {
     }
 
     console.error('❌ Blocked by CORS:', origin);
-    return callback(
-      new Error('CORS policy does not allow this origin'),
-      false
-    );
+    return callback(new Error('CORS policy does not allow this origin'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -66,9 +73,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-
-
 
 // @ Port Declare
 const port = process.env.PORT || 5000;
@@ -119,6 +123,8 @@ app.get('/', (req, res) => res.status(200).send('Hello World!'));
 app.listen(port, async () => {
   try {
     console.log(`StacoPost app listening on port ${port}!`);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+
     await dbConnect();
   } catch (error) {
     console.log(`Error in Blogpost app` + error);

@@ -87,7 +87,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // ` Upload Auth Route (before clerkMiddleware to allow unauthenticated access)
-app.get('/posts/upload-auth', uploadAuthController);
+app.get('/api/posts/upload-auth', uploadAuthController);
 
 // Clerk middleware removed
 

@@ -17,36 +17,36 @@ dotenv.config({ override: true });
 
 // / Upload Auth Using ImageKit
 
-let imageKit = null;
-try {
-  if (
-    process.env.IMAGEKIT_PRIVATE_KEY &&
-    process.env.IMAGEKIT_PUBLIC_KEY &&
-    process.env.IMAGEKIT_END_POINT
-  ) {
-    imageKit = new ImageKit({
-      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-      publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-      urlEndpoint: process.env.IMAGEKIT_END_POINT,
-    });
-  }
-} catch (error) {
-  console.warn('ImageKit not configured:', error.message);
-}
-
 export const uploadAuthController = async (req, res) => {
   try {
-    if (!imageKit) {
-      return res.status(500).json({ error: 'ImageKit not configured' });
-    }
-    const result = imageKit.getAuthenticationParameters();
+    const { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY, IMAGEKIT_URL_ENDPOINT } =
+      process.env;
 
-    res.status(200).json(result);
+    // HARD FAIL IF ENV IS MISSING
+    if (
+      !IMAGEKIT_PRIVATE_KEY ||
+      !IMAGEKIT_PUBLIC_KEY ||
+      !IMAGEKIT_URL_ENDPOINT
+    ) {
+      return res.status(500).json({
+        error: 'ImageKit env variables missing',
+      });
+    }
+
+    // ✅ INITIALIZE AT REQUEST TIME
+    const imageKit = new ImageKit({
+      privateKey: IMAGEKIT_PRIVATE_KEY,
+      publicKey: IMAGEKIT_PUBLIC_KEY,
+      urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+    });
+
+    const authParams = imageKit.getAuthenticationParameters();
+
+    return res.status(200).json(authParams);
   } catch (error) {
-    console.error('Error generating authentication parameters:', error);
-    res
-      .status(500)
-      .send({ error: 'Failed to generate authentication parameters' });
+    return res.status(500).json({
+      error: 'Failed to generate authentication parameters',
+    });
   }
 };
 
@@ -88,12 +88,12 @@ export const getAllPostController = async (req, res) => {
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('username')),
             'LIKE',
-            `%${author.toLowerCase()}%`
+            `%${author.toLowerCase()}%`,
           ),
           Sequelize.where(
             Sequelize.fn('LOWER', Sequelize.col('email')),
             'LIKE',
-            `%${author.toLowerCase()}%`
+            `%${author.toLowerCase()}%`,
           ),
         ],
       },
@@ -107,7 +107,7 @@ export const getAllPostController = async (req, res) => {
     query.postTitle = Sequelize.where(
       Sequelize.fn('LOWER', Sequelize.col('postTitle')),
       'LIKE',
-      `%${searchInput.toLowerCase()}%`
+      `%${searchInput.toLowerCase()}%`,
     );
   }
   if (featuredPost) {
@@ -227,6 +227,7 @@ export const createPostController = async (req, res) => {
 
   // $ De-structure input from client
   const { category, postImage, postTitle, subTitle, content } = req.body;
+  console.log(req.body.postImage);
 
   // ` Create SLUG
 
